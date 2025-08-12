@@ -11,6 +11,7 @@ jobs:
   setup:
     executor: continuation/default
     steps:
+      - checkout # checkout code
       - continuation/continue:
           configuration_path: angular.yml # use newly generated config to continue the pipeline
 
