@@ -1,0 +1,58 @@
+version: 2.1
+
+executors:
+  default-executor:
+    docker:
+      - image: cimg/node:24.5.0
+
+jobs:
+  build:
+    working_directory: ~/projects/vue
+    executor: default-executor
+    steps:
+      - checkout:
+          path: ~/projects
+      - restore_cache:
+          key: VueCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: VueCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install tools & lint & test
+          command: |
+            pwd
+            # Add lint/test commands here as needed
+
+  deploy:
+    working_directory: ~/projects/vue
+    executor: default-executor
+    steps:
+      - checkout:
+          path: ~/projects
+      - restore_cache:
+          key: VueCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - run:
+          name: Build project
+          command: |
+            ls -la src/environments || true
+            npm run build
+      - run:
+          name: Deploy to Firebase
+          command: |
+            bash ~/projects/.circleci/deploy-firebase.sh
+
+workflows:
+  workflow:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - dev
+                - main
