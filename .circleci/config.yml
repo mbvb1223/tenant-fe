@@ -57,11 +57,11 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" = "dev" ]; then
               echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-angular
             fi
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              echo "$PROD_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod
+              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-angular
             fi
 
 workflows:
