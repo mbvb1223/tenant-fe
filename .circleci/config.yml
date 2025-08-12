@@ -1,0 +1,21 @@
+version: 2.1
+
+# define this file as the setup phase of your dynamic configuration
+setup: true
+
+# invoke the continuation orb to make the continuation/continue command available
+orbs:
+  continuation: circleci/continuation@1
+
+jobs:
+  setup:
+    executor: continuation/default
+    steps:
+      - checkout # checkout code
+      - continuation/continue:
+          configuration_path: .circleci/angular.yml # use newly generated config to continue the pipeline
+
+workflows:
+  setup-workflow:
+    jobs:
+      - setup
