@@ -23,32 +23,48 @@ jobs:
           name: Install tools & lint & test
           command: |
             pwd
+            # Add lint/test commands here as needed
       - run:
           name: Build project
           command: |
-            if [ "${CIRCLE_BRANCH}" == "dev" ]; then
-              mv src/environments/environment.dev.ts src/environments/environment.ts;
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/';
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              mv src/environments/environment.dev.ts src/environments/environment.ts
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/'
             fi
 
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              mv src/environments/environment.prod.ts src/environments/environment.ts;
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/';
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              mv src/environments/environment.prod.ts src/environments/environment.ts
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/'
             fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist
+
   deploy:
+    working_directory: ~/projects/angular
+    executor: default-executor
     steps:
-      - checkout
+      - checkout:
+          path: ~/projects
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install Firebase CLI
+          command: |
+            npm install --no-save firebase-tools
       - run:
           name: Deploy to Firebase
           command: |
-            if [ "${CIRCLE_BRANCH}" == "dev" ]; then
-              echo $OTT_DEV_GOOGLE_APPLICATION_CREDENTIALS > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next;
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              echo "$OTT_DEV_GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next
             fi
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              echo $OTT_PROD_GOOGLE_APPLICATION_CREDENTIALS > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod;
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              echo "$OTT_PROD_GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod
             fi
+
 workflows:
   workflow:
     jobs:
