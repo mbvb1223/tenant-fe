@@ -6,8 +6,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - run: |
-          circleci config process .circleci/angular.yml > /tmp/processed.yml
+      - run: circleci config process .circleci/angular.yml > /tmp/processed.yml
 workflows:
   setup:
     jobs:
