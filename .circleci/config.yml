@@ -6,7 +6,7 @@ executors:
       - image: cimg/node:24.5.0
 
 jobs:
-  build_and_deploy:
+  build:
     working_directory: ~/projects/angular
     executor: default-executor
     steps:
@@ -35,6 +35,9 @@ jobs:
               mv src/environments/environment.prod.ts src/environments/environment.ts;
               ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/';
             fi
+  deploy:
+    steps
+      - checkout
       - run:
           name: Deploy to Firebase
           command: |
@@ -46,12 +49,15 @@ jobs:
               echo $OTT_PROD_GOOGLE_APPLICATION_CREDENTIALS > credentials.json
               GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod;
             fi
+workflows:
+  workflow:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
           filters:
             branches:
               only:
                 - dev
-                - master
-workflows:
-  workflow:
-    jobs:
-      - build_and_deploy
+                - main
