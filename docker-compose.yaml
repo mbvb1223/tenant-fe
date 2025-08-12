@@ -7,3 +7,12 @@ services:
     ports:
       - "4200:4200"
     command: sh -c "if [ ! -d 'node_modules' ]; then npm install -g @angular/cli && npx ng new my-app --skip-git --directory ./ --routing=true --style=scss && npm install; fi && npx ng serve --host 0.0.0.0"
+
+  react:
+    image: node:24
+    working_dir: /app
+    volumes:
+      - ./react:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "if [ ! -d 'node_modules' ]; then npm create vite@latest . -- --template react && npm install; fi && npm run dev -- --host"

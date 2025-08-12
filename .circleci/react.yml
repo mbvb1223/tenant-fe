@@ -1,0 +1,77 @@
+version: 2.1
+
+executors:
+  default-executor:
+    docker:
+      - image: cimg/node:24.5.0
+
+jobs:
+  build:
+    working_directory: ~/projects/react
+    executor: default-executor
+    steps:
+      - checkout:
+          path: ~/projects
+      - restore_cache:
+          key: ReactCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: ReactCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install tools & lint & test
+          command: |
+            pwd
+            # Add lint/test commands here as needed
+
+  deploy:
+    working_directory: ~/projects/react
+    executor: default-executor
+    steps:
+      - checkout:
+          path: ~/projects
+      - restore_cache:
+          key: ReactCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - run:
+          name: Build project
+          command: |
+            ls -la src/environments || true
+            
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              npm run build
+            fi
+
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              mv ./src/environments/environment.prod.ts ./src/environments/environment.ts
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-fe.web.app/'
+            fi
+      - run:
+          name: Install Firebase CLI
+          command: |
+            npm install --no-save firebase-tools
+      - run:
+          name: Deploy to Firebase
+          command: |
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
+            fi
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
+            fi
+
+workflows:
+  workflow:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - dev
+                - main
