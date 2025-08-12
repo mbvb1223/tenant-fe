@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
+# This script deploys the Firebase project based on the branch.
+npm install --no-save firebase-tools
 
 if [ "${CIRCLE_BRANCH}" = "dev" ]; then
   echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
