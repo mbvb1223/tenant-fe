@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout # checkout code
       - continuation/continue:
-          configuration_path: .circleci/angular.yml # use project config to continue the pipeline
+          configuration_path: .circleci/svelte.yml # use project config to continue the pipeline
 
 workflows:
   setup-workflow:
