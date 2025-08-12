@@ -37,8 +37,6 @@ jobs:
       - run:
           name: Build project
           command: |
-            set -eux
-            echo "CWD: $(pwd)"
             ls -la src/environments || true
             
             if [ "${CIRCLE_BRANCH}" = "dev" ]; then
