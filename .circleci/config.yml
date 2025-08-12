@@ -24,22 +24,6 @@ jobs:
           command: |
             pwd
             # Add lint/test commands here as needed
-      - run:
-          name: Build project
-          command: |
-            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              mv src/environments/environment.dev.ts src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/'
-            fi
-
-            if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              mv src/environments/environment.prod.ts src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/'
-            fi
-      - persist_to_workspace:
-          root: .
-          paths:
-            - dist
 
   deploy:
     working_directory: ~/projects/angular
@@ -47,8 +31,21 @@ jobs:
     steps:
       - checkout:
           path: ~/projects
-      - attach_workspace:
-          at: .
+      - restore_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - run:
+          name: Build project
+          command: |
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              mv ./src/environments/environment.dev.ts ./src/environments/environment.ts
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/'
+            fi
+
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              mv ./src/environments/environment.prod.ts ./src/environments/environment.ts
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/'
+            fi
       - run:
           name: Install Firebase CLI
           command: |
