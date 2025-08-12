@@ -16,6 +16,6 @@ jobs:
           configuration_path: .circleci/angular.yml # use newly generated config to continue the pipeline
 
 workflows:
-  my-setup-workflow:
+  setup-workflow:
     jobs:
       - setup
