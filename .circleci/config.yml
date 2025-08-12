@@ -56,11 +56,11 @@ jobs:
           name: Deploy to Firebase
           command: |
             if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              echo "$OTT_DEV_GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
               GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next
             fi
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              echo "$OTT_PROD_GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
+              echo "$PROD_GOOGLE_CREDENTIALS" > credentials.json
               GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod
             fi
 
