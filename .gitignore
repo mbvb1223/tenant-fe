@@ -1,0 +1,7 @@
+# IDEs and editors
+.idea/
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
