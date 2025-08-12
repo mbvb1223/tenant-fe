@@ -40,13 +40,10 @@ jobs:
             ls -la src/environments || true
             npm run build
       - run:
-          name: Install Firebase CLI
-          command: |
-            npm install --no-save firebase-tools
-      - run:
           name: Deploy to Firebase
           command: |
-            ~/projects/.circleci/deploy-firebase.sh
+            npm install --no-save firebase-tools
+            bash ~/projects/.circleci/deploy-firebase.sh
 
 workflows:
   workflow:
