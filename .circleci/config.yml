@@ -53,6 +53,10 @@ jobs:
       - run:
           name: Deploy to Firebase
           command: |
+            set -eux
+            echo "CWD: $(pwd)"
+            ls -la src/environments || true
+
             if [ "${CIRCLE_BRANCH}" = "dev" ]; then
               echo "$OTT_DEV_GOOGLE_APPLICATION_CREDENTIALS" > credentials.json
               GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next
