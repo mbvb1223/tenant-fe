@@ -36,7 +36,7 @@ jobs:
               ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/';
             fi
   deploy:
-    steps
+    steps:
       - checkout
       - run:
           name: Deploy to Firebase
