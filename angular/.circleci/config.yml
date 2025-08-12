@@ -1,0 +1,56 @@
+version: 2.1
+executors:
+  default-executor:
+    docker:
+      - image: cimg/node:24.5.0
+
+jobs:
+  build_and_deploy:
+    working_directory: ~/angular
+    executor: default-executor
+    steps:
+      - checkout:
+          path: ~/angular
+      - restore_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install tools & lint & test
+          command: |
+            pwd
+      - run:
+          name: Build project
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "dev" ]; then
+              mv src/environments/environment-2.dev.ts src/environments/environment.ts;
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/';
+            fi
+
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              mv src/environments/environment-2.prod.ts src/environments/environment.ts;
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/';
+            fi
+      - run:
+          name: Deploy to Firebase
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "dev" ]; then
+              echo $OTT_DEV_GOOGLE_APPLICATION_CREDENTIALS > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-next;
+            fi
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo $OTT_PROD_GOOGLE_APPLICATION_CREDENTIALS > credentials.json
+              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project mo-fe-prod;
+            fi
+          filters:
+            branches:
+              only:
+                - dev
+                - master
+workflows:
+  workflow:
+    jobs:
+      - build_and_deploy
