@@ -38,15 +38,7 @@ jobs:
           name: Build project
           command: |
             ls -la src/environments || true
-            
-            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              npm run build
-            fi
-
-            if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              mv ./src/environments/environment.prod.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-fe.web.app/'
-            fi
+            npm run build
       - run:
           name: Install Firebase CLI
           command: |
@@ -54,14 +46,7 @@ jobs:
       - run:
           name: Deploy to Firebase
           command: |
-            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
-            fi
-            if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
-            fi
+            ~/projects/.circleci/deploy-firebase.sh
 
 workflows:
   workflow:
