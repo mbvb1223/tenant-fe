@@ -41,12 +41,12 @@ jobs:
             
             if [ "${CIRCLE_BRANCH}" = "dev" ]; then
               mv ./src/environments/environment.dev.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://mo-fe-next.web.app/'
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-angular.web.app/'
             fi
 
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
               mv ./src/environments/environment.prod.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://onthitoeic.net/'
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-angular.web.app/'
             fi
       - run:
           name: Install Firebase CLI
