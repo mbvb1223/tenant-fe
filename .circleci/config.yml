@@ -1,78 +1,14 @@
 version: 2.1
-
-executors:
-  default-executor:
-    docker:
-      - image: cimg/node:24.5.0
+setup: true
 
 jobs:
-  build:
-    working_directory: ~/projects/angular
-    executor: default-executor
+  choose-config:
+    docker:
+      - image: cimg/base:stable
     steps:
-      - checkout:
-          path: ~/projects
-      - restore_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
-      - run: npm install
-      - save_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-      - run:
-          name: Install tools & lint & test
-          command: |
-            pwd
-            # Add lint/test commands here as needed
-
-  deploy:
-    working_directory: ~/projects/angular
-    executor: default-executor
-    steps:
-      - checkout:
-          path: ~/projects
-      - restore_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
-      - run: npm install
-      - run:
-          name: Build project
-          command: |
-            ls -la src/environments || true
-            
-            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              mv ./src/environments/environment.dev.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-fe.web.app/'
-            fi
-
-            if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              mv ./src/environments/environment.prod.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-fe.web.app/'
-            fi
-      - run:
-          name: Install Firebase CLI
-          command: |
-            npm install --no-save firebase-tools
-      - run:
-          name: Deploy to Firebase
-          command: |
-            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
-              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
-            fi
-            if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-              GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase deploy --project tenant-fe
-            fi
-
+      - run: |
+          circleci config process .circleci/angular.yml > /tmp/processed.yml
 workflows:
-  workflow:
+  setup:
     jobs:
-      - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - dev
-                - main
+      - choose-config
