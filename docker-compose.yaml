@@ -25,3 +25,12 @@ services:
     ports:
       - "5055:5055"
     command: sh -c "if [ ! -d 'node_modules' ]; then npm create vite@latest . -- --template svelte && npm install; fi && npm run dev -- --host 0.0.0.0 --port 5055"
+
+  vue:
+    image: node:24
+    working_dir: /app
+    volumes:
+      - ./vue:/app
+    ports:
+      - "5088:5088"
+    command: sh -c "if [ ! -d 'node_modules' ]; then npm create vite@latest . -- --template vue && npm install; fi && npm run dev -- --host 0.0.0.0 --port 5088"
