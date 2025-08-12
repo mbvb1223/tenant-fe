@@ -1,0 +1,9 @@
+services:
+  angular:
+    image: node:24
+    working_dir: /app
+    volumes:
+      - ./angular:/app
+    ports:
+      - "4200:4200"
+    command: sh -c "if [ ! -d 'node_modules' ]; then npm install -g @angular/cli && npx ng new my-app --skip-git --directory ./ --routing=true --style=scss && npm install; fi && npx ng serve --host 0.0.0.0"
