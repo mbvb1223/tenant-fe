@@ -11,6 +11,7 @@ import {setGlobalOptions} from "firebase-functions";
 import {onRequest} from "firebase-functions/https";
 import { initializeApp } from "firebase-admin/app";
 import { beforeUserCreated } from "firebase-functions/v2/identity";
+import { defineSecret } from "firebase-functions/params";
 import * as logger from "firebase-functions/logger";
 import axios from "axios";
 
@@ -31,15 +32,17 @@ initializeApp();
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
+// Define some parameters
+const slackToken = defineSecret('SLACK_TOKEN');
+
 export const helloWorld = onRequest((request, response) => {
   logger.info("Hello logs!", {structuredData: true});
   response.send("Hello from Firebase!");
 });
 
-export const sendSlackNotification = onRequest(async (request, response) => {
+export const sendSlackNotification = onRequest({ secrets: [slackToken] }, async (request, response) => {
   try {
     const message = "message aaaa";
-    const slackToken = '';
     const channelId = 'C09KC1DG7BL';
 
     const slackMessage = `${message}`;
@@ -50,7 +53,7 @@ export const sendSlackNotification = onRequest(async (request, response) => {
       mrkdwn: true,
     }, {
       headers: {
-        'Authorization': `Bearer ${slackToken}`,
+        'Authorization': `Bearer ${slackToken.value()}`,
         'Content-Type': 'application/json',
       }
     });
@@ -75,7 +78,7 @@ export const sendSlackNotification = onRequest(async (request, response) => {
 });
 
 // Firebase Auth trigger for user registration
-export const onUserSignUp = beforeUserCreated(async (event) => {
+export const onUserSignUp = beforeUserCreated({ secrets: [slackToken] }, async (event) => {
   try {
     const user = event.data;
 
@@ -85,7 +88,6 @@ export const onUserSignUp = beforeUserCreated(async (event) => {
       return;
     }
 
-    const slackToken = '';
     const channelId = 'C09KC1DG7BL';
 
     // Extract user information with null checks
@@ -111,7 +113,7 @@ Welcome to the platform! 🚀`;
       mrkdwn: true,
     }, {
       headers: {
-        'Authorization': `Bearer ${slackToken}`,
+        'Authorization': `Bearer ${slackToken.value()}`,
         'Content-Type': 'application/json',
       }
     });
