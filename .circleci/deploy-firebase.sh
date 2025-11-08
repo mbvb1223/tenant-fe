@@ -15,5 +15,5 @@ fi
 
 if [ "${CIRCLE_BRANCH}" = "cct" ]; then
   echo "$DEV_GOOGLE_CREDENTIALS" > credentials.json
-  GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase hosting:channel:deploy cct --only hosting:tenant-fe --project tenant-fe
+  GOOGLE_APPLICATION_CREDENTIALS=credentials.json ./node_modules/.bin/firebase hosting:channel:deploy cct --project tenant-fe
 fi

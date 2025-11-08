@@ -51,7 +51,7 @@ jobs:
             
             if [ "${CIRCLE_BRANCH}" = "cct" ]; then
               mv ./src/environments/environment.dev.ts ./src/environments/environment.ts
-              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://cct-tenant-fe.web.app/'
+              ./node_modules/.bin/ng build --aot --output-hashing=all --base-href='https://tenant-fe--cct-17e0at4v.web.app/'
             fi
       - run:
           name: Deploy to Firebase
