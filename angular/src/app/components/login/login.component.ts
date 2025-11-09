@@ -41,7 +41,7 @@ export class LoginComponent {
       next: (result) => {
         console.log(result);
         this.loading = false;
-        this.router.navigate(['/index']);
+        this.router.navigate(['/chat']);
       },
       error: (error) => {
         this.loading = false;
