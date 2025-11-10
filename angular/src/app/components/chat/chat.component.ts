@@ -16,14 +16,15 @@ import { User } from '@angular/fire/auth';
 })
 export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
-  
+  @ViewChild('messageInput') messageInput!: ElementRef;
+
   messages: ChatMessage[] = [];
   currentMessage = '';
   currentUser: User | null = null;
   rooms: ChatRoom[] = [];
   currentRoomId = 'general';
   isLoading = false;
-  
+
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -74,10 +75,12 @@ export class ChatComponent implements OnInit, OnDestroy {
       .then(() => {
         this.currentMessage = '';
         this.isLoading = false;
+        this.focusMessageInput();
       })
       .catch(error => {
         console.error('Error sending message:', error);
         this.isLoading = false;
+        this.focusMessageInput();
       });
   }
 
@@ -107,6 +110,14 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (this.messagesContainer) {
         const element = this.messagesContainer.nativeElement;
         element.scrollTop = element.scrollHeight;
+      }
+    }, 100);
+  }
+
+  private focusMessageInput(): void {
+    setTimeout(() => {
+      if (this.messageInput) {
+        this.messageInput.nativeElement.focus();
       }
     }, 100);
   }

@@ -11,7 +11,7 @@ import { User } from '@angular/fire/auth';
 export class ChatService {
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
-  
+
   private currentUser: User | null = null;
   private currentRoomId = 'general';
 
@@ -49,7 +49,7 @@ export class ChatService {
   listenToMessages(): void {
     const messagesRef = ref(this.database, `rooms/${this.currentRoomId}/messages`);
     const messagesQuery = query(messagesRef, orderByChild('timestamp'), limitToLast(50));
-    
+
     onValue(messagesQuery, (snapshot) => {
       const messages: ChatMessage[] = [];
       snapshot.forEach((childSnapshot) => {
@@ -57,7 +57,7 @@ export class ChatService {
         message.id = childSnapshot.key || undefined;
         messages.push(message);
       });
-      
+
       // Sort by timestamp to ensure proper order
       messages.sort((a, b) => a.timestamp - b.timestamp);
       this.messagesSubject.next(messages);

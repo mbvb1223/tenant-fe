@@ -42,7 +42,7 @@ export const helloWorld = onRequest((request, response) => {
 
 export const sendSlackNotification = onRequest({ secrets: [slackToken] }, async (request, response) => {
   try {
-    const message = "message aaaa";
+    const message = "CCT message";
     const channelId = 'C09KC1DG7BL';
 
     const slackMessage = `${message}`;

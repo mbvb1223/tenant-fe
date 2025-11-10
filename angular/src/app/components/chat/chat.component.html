@@ -3,21 +3,10 @@
   <div class="rooms-sidebar">
     <div class="sidebar-header">
       <h3>Chat Rooms</h3>
-      <button class="btn btn-sm btn-primary" (click)="createNewRoom()">+ New Room</button>
     </div>
     <div class="rooms-list">
-      <div 
-        *ngFor="let room of rooms" 
-        class="room-item"
-        [class.active]="room.id === currentRoomId"
-        (click)="switchRoom(room.id!)"
-      >
-        <div class="room-name"># {{ room.name }}</div>
-        <div class="room-description" *ngIf="room.description">{{ room.description }}</div>
-      </div>
-      
       <!-- Default General Room -->
-      <div 
+      <div
         class="room-item"
         [class.active]="currentRoomId === 'general'"
         (click)="switchRoom('general')"
@@ -43,7 +32,7 @@
       <div *ngIf="messages.length === 0" class="no-messages">
         No messages yet. Start the conversation!
       </div>
-      
+
       <div *ngFor="let message of messages" class="message" [class.own-message]="isCurrentUser(message)">
         <div class="message-header">
           <span class="username">{{ message.userName || message.userEmail }}</span>
@@ -56,15 +45,16 @@
     <!-- Message Input -->
     <div class="message-input-container">
       <div class="input-group">
-        <input 
-          type="text" 
+        <input
+          #messageInput
+          type="text"
           [(ngModel)]="currentMessage"
           (keypress)="onKeyPress($event)"
           placeholder="Type a message..."
           class="form-control"
           [disabled]="!currentUser || isLoading"
         >
-        <button 
+        <button
           class="btn btn-primary"
           (click)="sendMessage()"
           [disabled]="!currentMessage.trim() || !currentUser || isLoading"
